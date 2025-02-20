@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Boldog Születésnapot!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      color: #333;
+      text-align: center;
+      overflow-x: hidden;
+    }
+    /* Nagy felirat a közepén */
+    #mainTitle {
+      font-size: 4em;
+      margin-top: 50px;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    /* Kvíz konténer – a középen megjelenő rész */
+    #quizContainer {
+      max-width: 800px;
+      margin: 50px auto;
+      background: rgba(255,255,255,0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    #quiz h2 {
+      margin-bottom: 20px;
+      color: #e91e63;
+    }
+    #quiz ul {
+      list-style: none;
+      padding: 0;
+    }
+    #quiz ul li {
+      background: #f8bbd0;
+      margin: 10px 0;
+      padding: 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    #quiz ul li:hover {
+      background: #f48fb1;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #e91e63;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #nextBtn:hover {
+      background-color: #d81b60;
+    }
+    #feedback {
+      margin-top: 15px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    /* Visszaszámláló – a bal alsó sarokban */
+    #countdown {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(255,255,255,0.8);
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-size: 1em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    /* Kredit – jobb alsó sarokban kis, diszkrét */
+    #credit {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.7em;
+      color: #666;
+      opacity: 0.5;
+    }
+    /* Fireworks konténer, teljes képernyős, rejtett alapból */
+    #fireworks-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+    /* Mobilbarát beállítások */
+    @media (max-width: 600px) {
+      #mainTitle {
+        font-size: 2.5em;
+        margin-top: 20px;
+      }
+      #quizContainer {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      #quiz h2 {
+        font-size: 1.5em;
+      }
+      #quiz ul li {
+        padding: 10px;
+        font-size: 1em;
+      }
+      #nextBtn {
+        padding: 10px;
+        font-size: 1em;
+      }
+      #countdown {
+        font-size: 0.9em;
+        padding: 8px 12px;
+      }
+      #credit {
+        font-size: 0.6em;
+      }
+    }
+  </style>
+  <!-- Fireworks library a jsDelivr CDN-ről -->
+  <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.5.0/dist/index.min.js"></script>
+</head>
+<body>
+  <!-- Nagy felirat a középen -->
+  <div id="mainTitle">Boldog Születésnapot!</div>
+  
+  <!-- Kvíz konténer a középen -->
+  <div id="quizContainer">
+    <div id="quiz">
+      <h2>Kvíz</h2>
+      <div id="question"></div>
+      <ul id="options"></ul>
+      <div id="feedback"></div>
+      <button id="nextBtn" style="display:none;">Következő</button>
+    </div>
+  </div>
+
+  <!-- Visszaszámláló a bal alsó sarokban -->
+  <div id="countdown"></div>
+  <!-- Kredit a jobb alsó sarokban -->
+  <div id="credit">Denton</div>
+  <!-- Fireworks konténer -->
+  <div id="fireworks-container"></div>
+
+  <script>
+    // Nyugdíj cél dátuma: Unokatesód 2000.02.27-én született, 65 éves kor = 2065. február 27.
+    var retirementDate = new Date("Feb 27, 2065 00:00:00").getTime();
+    var countdownElement = document.getElementById("countdown");
+    var countdownInterval = setInterval(function() {
+      var now = new Date().getTime();
+      var distance = retirementDate - now;
+      
+      if(distance < 0) {
+        countdownElement.innerHTML = "Nyugdíjba vonultál!";
+        clearInterval(countdownInterval);
+        return;
+      }
+      
+      var years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365.25));
+      var days = Math.floor((distance % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownElement.innerHTML = "Nyugdíjig hátralévő idő: " 
+        + years + " év, " + days + " nap, " + hours + " óra, " 
+        + minutes + " perc, " + seconds + " másodperc";
+    }, 1000);
+
+    // Kvíz kód (10 kérdéses)
+    const questions = [
+      {
+        question: "Melyik korházba születtél?",
+        options: ["Kettes korház", "Teddy Maci Kórház", "Szent-Györgyi Albert Klinikai", "Kettes Klinika"],
+        answer: 0,
+        correctText: "Gratulálok!",
+        wrongText: "Nem talált – igyál egy felest, egyenlőre csak egy bulangát!"
+      },
+      {
+        question: "Mióta nevel téged Viktor?",
+        options: ["2009", "2010", "2012", "2013"],
+        answer: 1,
+        correctText: "Ez már nem semmi!",
+        wrongText: "Ha ezt nem tudtad, itt az ideje egy JAGER-nak:("
+      },
+      {
+        question: "Szegeden melyik utcába vittek haza kórházból 25 évvel ezelőtt?",
+        options: ["Hont Ferenc utca", "Retek utca", "Selyem utca", "Elfelejtettek hazavinni"],
+        answer: 0,
+        correctText: "Ez igen!",
+        wrongText: "Ha ezt nem tudtad, Jucival bármire a vendégeink vagyunk (szeretünk)!"
+      },
+      {
+        question: "Mi a kedvenc italom?",
+        options: ["Vérnarancsos Hubertusz", "Víz", "Jim Beam Apple", "JagerMainster"],
+        answer: 0,
+        correctText: "Honnan tudtad???",
+        wrongText: "Szerintem igyál valamit, de ezt most te választhatod ki!"
+      },
+      {
+        question: "Ki a kérdést kitaláló keresztanyja?",
+        options: ["Szabó Karolina", "Szabó Éva", "Soós Éva", "Szabó Anikó"],
+        answer: 1,
+        correctText: "Ez nem volt nehéz!",
+        wrongText: "Ha ezt nem tudtad kitalálni, itt az ideje elkezdeni gondolkodni – igyál 1 bulangát (RÁD FÉR)!"
+      },
+      {
+        question: "Mi a mentők száma?",
+        options: ["104", "107", "112", "911"],
+        answer: 0,
+        correctText: "Nehéz volt, mi?",
+        wrongText: "Ha ezt nem tudtad... keress nagyon gyorsan új munkahelyet! Egy bulnaga azért mehet :D"
+      },
+      {
+        question: "Mikor került Molly hozzátok? (év)",
+        options: ["2019", "2022", "2021", "2020"],
+        answer: 2,
+        correctText: "Ügyes!",
+        wrongText: "Ha ezt nem tudtad, menj haza bocsánatot kérni a kutyától! Itt az idő egy Jagerre."
+      },
+      {
+        question: "Hányas lába van Jancsinak?",
+        options: ["41", "47", "44", "40"],
+        answer: 1,  // Javítottam, hogy érvényes index legyen
+        correctText: "Nincs jó válasz, szóval igyál egyet!",
+        wrongText: "Én sem tudom, de szerintem Jani szívesen inná egy sört!"
+      },
+      {
+        question: "Mi Kiszombor irányítószáma?",
+        options: ["6775", "6754", "6742", "5312"],
+        answer: 0,
+        correctText: "Tudtam, hogy tudni fogod!",
+        wrongText: "Igyál büntiből most csak egy kis firrisítőt!"
+      },
+      {
+        question: "Ki a keresztanyád?",
+        options: ["Szabó Karolina", "Szabóné Pocsai Szilvia", "Szabó Anikó", "Soós Ilona"],
+        answer: 1,  // Javítottam, hogy érvényes index legyen
+        correctText: "Szép lett volna, ha kitalálod!",
+        wrongText: "Nem is vagy megkeresztelkedve 🤨🤨🤨🤨  igyál egy utolsót, de az jó legyen!!"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const feedbackElement = document.getElementById("feedback");
+
+    function loadQuestion() {
+      feedbackElement.innerText = "";
+      nextBtn.style.display = "none";
+      const q = questions[currentQuestion];
+      questionElement.innerText = q.question;
+      optionsElement.innerHTML = "";
+      q.options.forEach((option, index) => {
+        const li = document.createElement("li");
+        li.innerText = option;
+        li.onclick = () => selectOption(index, li);
+        optionsElement.appendChild(li);
+      });
+      Array.from(optionsElement.children).forEach(item => {
+        item.style.pointerEvents = "auto";
+      });
+    }
+
+    function selectOption(selectedIndex, li) {
+      Array.from(optionsElement.children).forEach(item => {
+        item.style.pointerEvents = "none";
+      });
+      const q = questions[currentQuestion];
+      if (selectedIndex === q.answer) {
+        li.style.backgroundColor = "#a8e6a1"; // zöld: helyes
+        feedbackElement.innerText = q.correctText;
+        score++;
+      } else {
+        li.style.backgroundColor = "#f7a1a1"; // piros: helytelen
+        feedbackElement.innerText = q.wrongText || "Helytelen válasz!";
+      }
+      nextBtn.style.display = "block";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = `
+        <h2>Eredmény: ${score} pont</h2>
+        <p style="font-size:1.5em; color:#e91e63; margin-top:20px;">
+          Boldog születésnapot!
+        </p>
+      `;
+      // Tűzijáték effekt indítása
+      const container = document.getElementById('fireworks-container');
+      container.style.display = 'block';
+      const fireworks = new Fireworks(container, { 
+        speed: 2, 
+        acceleration: 1.05, 
+        friction: 0.95, 
+        gravity: 1.5, 
+        particles: 50, 
+        trace: 3, 
+        explosion: 5,
+        autoresize: true
+      });
+      fireworks.start();
+      setTimeout(() => {
+        fireworks.stop();
+      }, 15000);
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
